@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Shop Tracker</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+body{
+background:#f3f4f6;
+font-family:sans-serif;
+}
+</style>
+
+</head>
+
+<body class="p-6">
+
+<div class="max-w-3xl mx-auto bg-white rounded-xl shadow-lg">
+
+<div class="bg-indigo-600 text-white p-6">
+<h1 class="text-2xl font-bold">Shop Daily Tracker</h1>
+</div>
+
+<div class="p-6">
+
+<div class="mb-6">
+<label class="font-bold">Date</label>
+<input type="date" id="dateInput" class="w-full border p-3 rounded mt-1">
+</div>
+
+<!-- CASH -->
+
+<div class="border p-4 mb-6 bg-gray-50 rounded">
+
+<h2 class="font-bold mb-3">Cash</h2>
+
+<div class="grid grid-cols-2 gap-4">
+
+<div>
+<label>Opening Cash</label>
+<input type="text" id="openingCash" class="w-full border p-2 rounded">
+</div>
+
+<div>
+<label>Closing Cash</label>
+<input type="text" id="closingCash" class="w-full border p-2 rounded">
+</div>
+
+</div>
+
+</div>
+
+<!-- EARNINGS -->
+
+<div class="border p-4 mb-6 bg-green-50 rounded">
+
+<h2 class="font-bold mb-3 text-green-700">Earnings</h2>
+
+<label>UPI Income</label> <input type="text" id="upiIncome" class="w-full border p-2 rounded">
+
+</div>
+
+<!-- EXPENSES -->
+
+<div class="border p-4 mb-6 bg-red-50 rounded">
+
+<h2 class="font-bold mb-3 text-red-700">Expenses</h2>
+
+<div class="grid grid-cols-2 gap-4">
+
+<div>
+<label>Cash Expenses</label>
+<input type="text" id="expenses" placeholder="Example: 200,300"
+class="w-full border p-2 rounded">
+</div>
+
+<div>
+<label>UPI Expenses</label>
+<input type="text" id="upiExpenses" placeholder="Example: 100,50"
+class="w-full border p-2 rounded">
+</div>
+
+</div>
+
+</div>
+
+<div class="bg-indigo-50 p-4 rounded mb-6">
+
+<p class="text-xl font-bold">
+₹ <span id="calcTotal">0</span>
+</p>
+
+</div>
+
+<button onclick="saveEntry()"
+class="w-full bg-indigo-600 text-white p-3 rounded font-bold">
+Save Entry </button>
+
+<!-- HISTORY -->
+
+<div class="mt-10">
+
+<h2 class="font-bold mb-3">History</h2>
+
+<table class="min-w-full border">
+
+<thead class="bg-gray-100">
+
+<tr>
+
+<th class="p-2 text-left">Date</th>
+<th class="p-2 text-right">Open</th>
+<th class="p-2 text-right">Close</th>
+<th class="p-2 text-right">Cash Exp</th>
+<th class="p-2 text-right">UPI In</th>
+<th class="p-2 text-right">UPI Exp</th>
+<th class="p-2 text-right">Total</th>
+<th></th>
+
+</tr>
+
+</thead>
+
+<tbody id="historyBody"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+let records=[]
+
+window.onload=()=>{
+
+document.getElementById("dateInput").valueAsDate=new Date()
+
+loadRecords()
+
+attachListeners()
+
+}
+
+/* Parse numbers with comma addition */
+
+function parseNumber(value){
+
+if(!value) return 0
+
+if(value.includes(",")){
+
+return value
+.split(",")
+.map(v=>parseFloat(v.trim())||0)
+.reduce((a,b)=>a+b,0)
+
+}
+
+return parseFloat(value)||0
+
+}
+
+/* Convert comma values to total */
+
+function normalizeField(id){
+
+const input=document.getElementById(id)
+
+const value=input.value
+
+if(value.includes(",")){
+
+const total=value
+.split(",")
+.map(v=>parseFloat(v.trim())||0)
+.reduce((a,b)=>a+b,0)
+
+input.value=total
+
+}
+
+}
+
+/* Attach listeners */
+
+function attachListeners(){
+
+["openingCash","closingCash","expenses","upiIncome","upiExpenses"]
+
+.forEach(id=>{
+
+const el=document.getElementById(id)
+
+el.addEventListener("input",calculate)
+
+el.addEventListener("blur",()=>normalizeField(id))
+
+})
+
+}
+
+/* Calculate profit */
+
+function calculate(){
+
+const open=parseNumber(openingCash.value)
+const close=parseNumber(closingCash.value)
+const exp=parseNumber(expenses.value)
+const upi=parseNumber(upiIncome.value)
+const upiExp=parseNumber(upiExpenses.value)
+
+const cashProfit=(close-open)+exp
+const total=cashProfit+upi-upiExp
+
+calcTotal.innerText=total.toFixed(2)
+
+}
+
+/* Load records */
+
+async function loadRecords(){
+
+const res=await fetch("http://localhost:5000/records")
+
+records=await res.json()
+
+renderTable()
+
+}
+
+/* Save entry */
+
+async function saveEntry(){
+
+const entry={
+
+date:dateInput.value,
+
+open:parseNumber(openingCash.value),
+close:parseNumber(closingCash.value),
+
+exp:parseNumber(expenses.value),
+
+upi:parseNumber(upiIncome.value),
+
+upiExp:parseNumber(upiExpenses.value),
+
+}
+
+entry.totalProfit=(entry.close-entry.open)+entry.exp+entry.upi-entry.upiExp
+
+await fetch("http://localhost:5000/records",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify(entry)
+
+})
+
+loadRecords()
+
+alert("Saved")
+
+}
+
+/* Render history */
+
+function renderTable(){
+
+historyBody.innerHTML=""
+
+records.forEach(r=>{
+
+historyBody.innerHTML+=`
+
+<tr class="border-t">
+
+<td class="p-2">${r.date}</td>
+<td class="p-2 text-right">${r.open}</td>
+<td class="p-2 text-right">${r.close}</td>
+<td class="p-2 text-right text-red-500">-${r.exp}</td>
+<td class="p-2 text-right text-green-600">+${r.upi}</td>
+<td class="p-2 text-right text-red-500">-${r.upiExp}</td>
+<td class="p-2 text-right font-bold">${r.totalProfit}</td>
+
+<td class="text-center">
+
+<button onclick="deleteEntry('${r._id}')"
+class="text-red-600 text-xs">
+
+Delete
+
+</button>
+
+</td>
+
+</tr>
+
+`
+
+})
+
+}
+
+/* Delete */
+
+async function deleteEntry(id){
+
+if(confirm("Delete record?")){
+
+await fetch(`http://localhost:5000/records/${id}`,{
+method:"DELETE"
+})
+
+loadRecords()
+
+}
+
+}
+
+</script>
+
+</body>
+</html>

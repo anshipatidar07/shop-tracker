@@ -1,0 +1,614 @@
+<!-- <!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>History</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+</head>
+
+<body class="bg-gray-100 p-6">
+
+<div class="max-w-4xl mx-auto bg-white shadow rounded">
+
+<div class="bg-gray-800 text-white p-4 text-xl font-bold">
+Transaction History
+</div>
+
+<div class="p-6">
+
+<div class="mb-4 space-x-4">
+
+<a href="income.html" class="text-green-600 underline">Income</a> <a href="expenses.html" class="text-red-600 underline">Expenses</a>
+
+</div>
+
+<table class="min-w-full border">
+
+<thead class="bg-gray-100">
+
+<tr>
+
+<th class="p-2 text-left">Date</th>
+<th class="p-2 text-right">Open</th>
+<th class="p-2 text-right">Close</th>
+<th class="p-2 text-right">Cash Exp</th>
+<th class="p-2 text-right">UPI In</th>
+<th class="p-2 text-right">UPI Exp</th>
+<th class="p-2 text-right">Total</th>
+<th></th>
+
+</tr>
+
+</thead>
+
+<tbody id="historyBody"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<script>
+
+let records=[]
+
+async function loadRecords(){
+
+const res=await fetch("http://localhost:5000/records")
+
+records=await res.json()
+
+renderTable()
+
+}
+
+function renderTable(){
+
+historyBody.innerHTML=""
+
+records.forEach(r=>{
+
+historyBody.innerHTML+=`
+
+<tr class="border-t">
+
+<td class="p-2">${r.date}</td>
+
+<td class="p-2 text-right">${r.open}</td>
+
+<td class="p-2 text-right">${r.close}</td>
+
+<td class="p-2 text-right text-red-500">-${r.exp}</td>
+
+<td class="p-2 text-right text-green-600">+${r.upi}</td>
+
+<td class="p-2 text-right text-red-500">-${r.upiExp}</td>
+
+<td class="p-2 text-right font-bold">${r.totalProfit}</td>
+
+<td>
+
+<button onclick="deleteEntry('${r._id}')"
+class="text-red-600 text-xs">
+
+Delete
+
+</button>
+
+</td>
+
+</tr>
+
+`
+
+})
+
+}
+
+async function deleteEntry(id){
+
+if(confirm("Delete record?")){
+
+await fetch(`http://localhost:5000/records/${id}`,{
+method:"DELETE"
+})
+
+loadRecords()
+
+}
+
+}
+
+loadRecords()
+
+</script>
+
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>History — The New Shop</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --green-light: #EAF3DE;
+    --green-mid:   #639922;
+    --green-dark:  #3B6D11;
+    --green-deep:  #27500A;
+    --green-border:#c0dd97;
+    --red-light:   #FCEBEB;
+    --red-mid:     #E24B4A;
+    --red-dark:    #A32D2D;
+    --red-deep:    #791F1F;
+    --red-border:  #F7C1C1;
+    --surface:     #f5f4f0;
+    --card:        #ffffff;
+    --border:      #e8e6e0;
+    --border-mid:  #d3d1c7;
+    --text:        #1a1a18;
+    --text-muted:  #888780;
+    --text-faint:  #b4b2a9;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--surface);
+    min-height: 100vh;
+    padding: 2rem 1rem 4rem;
+    color: var(--text);
+  }
+
+  .wrap { max-width: 700px; margin: 0 auto; }
+
+  .back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--text-muted);
+    text-decoration: none;
+    margin-bottom: 1.5rem;
+    transition: color 0.15s;
+  }
+  .back:hover { color: var(--text); }
+
+  .page-header { margin-bottom: 2rem; }
+  .page-header .eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+  .page-header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.3px;
+  }
+
+  /* Summary pills */
+  .summary-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 2rem;
+  }
+  .summary-pill {
+    flex: 1;
+    border-radius: 14px;
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--border);
+  }
+  .summary-pill.green {
+    background: var(--green-light);
+    border-color: var(--green-border);
+  }
+  .summary-pill.red {
+    background: var(--red-light);
+    border-color: var(--red-border);
+  }
+  .summary-pill.neutral {
+    background: var(--card);
+  }
+  .pill-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .green .pill-label { color: var(--green-dark); }
+  .red   .pill-label { color: var(--red-dark); }
+  .neutral .pill-label { color: var(--text-muted); }
+  .pill-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+  }
+  .green .pill-value   { color: var(--green-dark); }
+  .red   .pill-value   { color: var(--red-dark); }
+  .neutral .pill-value { color: var(--text); }
+  .pill-value .currency {
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400;
+    margin-right: 2px;
+  }
+
+  /* Section */
+  .section { margin-bottom: 2rem; }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .section-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .dot-green { background: var(--green-mid); }
+  .dot-red   { background: var(--red-mid); }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .section-count {
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--text-faint);
+  }
+
+  /* Table card */
+  .table-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  thead tr {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+  thead th {
+    padding: 10px 14px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    text-align: right;
+  }
+  thead th:first-child { text-align: left; }
+
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.12s;
+  }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--surface); }
+
+  td {
+    padding: 12px 14px;
+    color: var(--text);
+    text-align: right;
+    vertical-align: middle;
+  }
+  td:first-child { text-align: left; }
+
+  .td-date { font-weight: 500; font-size: 13px; }
+  .td-num  { font-variant-numeric: tabular-nums; }
+
+  .val-green { color: var(--green-dark); }
+  .val-red   { color: var(--red-dark); }
+  .val-bold  { font-weight: 500; }
+
+  /* Delete button */
+  .btn-del {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-faint);
+    padding: 4px 6px;
+    border-radius: 6px;
+    transition: color 0.15s, background 0.15s;
+    display: flex;
+    align-items: center;
+  }
+  .btn-del:hover { color: var(--red-mid); background: var(--red-light); }
+
+  /* Empty state */
+  .empty {
+    padding: 2.5rem 1rem;
+    text-align: center;
+    color: var(--text-faint);
+    font-size: 13px;
+  }
+
+  /* Loading */
+  .loading {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--text-faint);
+    font-size: 13px;
+  }
+
+  /* Add links */
+  .add-links {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 2rem;
+  }
+  .add-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 8px 14px;
+    border-radius: 99px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    transition: border-color 0.15s, background 0.15s;
+    color: var(--text);
+  }
+  .add-link:hover { background: var(--surface); border-color: var(--border-mid); }
+  .add-link .dot { width: 6px; height: 6px; border-radius: 50%; }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--text);
+    color: #fff;
+    font-size: 14px;
+    padding: 10px 20px;
+    border-radius: 99px;
+    opacity: 0;
+    transition: opacity 0.2s, transform 0.2s;
+    pointer-events: none;
+    white-space: nowrap;
+    z-index: 100;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <a href="index.html" class="back">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    The New Shop
+  </a>
+
+  <div class="page-header">
+    <p class="eyebrow">The New Shop</p>
+    <h1>History</h1>
+  </div>
+
+  <!-- Summary -->
+  <div class="summary-row">
+    <div class="summary-pill green">
+      <p class="pill-label">Total income</p>
+      <p class="pill-value"><span class="currency">₹</span><span id="sumIncome">—</span></p>
+    </div>
+    <div class="summary-pill red">
+      <p class="pill-label">Total expense</p>
+      <p class="pill-value"><span class="currency">₹</span><span id="sumExpense">—</span></p>
+    </div>
+    <div class="summary-pill neutral">
+      <p class="pill-label">Net profit</p>
+      <p class="pill-value" id="sumNetWrap"><span class="currency">₹</span><span id="sumNet">—</span></p>
+    </div>
+  </div>
+
+  <!-- Quick links -->
+  <div class="add-links">
+    <a href="income.html" class="add-link">
+      <span class="dot" style="background:var(--green-mid)"></span>
+      Add income
+    </a>
+    <a href="expenses.html" class="add-link">
+      <span class="dot" style="background:var(--red-mid)"></span>
+      Add expense
+    </a>
+  </div>
+
+  <!-- Income table -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-dot dot-green"></span>
+      <span class="section-title">Income</span>
+      <span class="section-count" id="incomeCount"></span>
+    </div>
+    <div class="table-card" id="incomeTableWrap">
+      <div class="loading">Loading…</div>
+    </div>
+  </div>
+
+  <!-- Expense table -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-dot dot-red"></span>
+      <span class="section-title">Expenses</span>
+      <span class="section-count" id="expenseCount"></span>
+    </div>
+    <div class="table-card" id="expenseTableWrap">
+      <div class="loading">Loading…</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast">Record deleted</div>
+
+<script>
+  let records = [];
+
+  function fmt(n) {
+    return Number(n).toLocaleString('en-IN', { maximumFractionDigits: 2 });
+  }
+
+  function fmtDate(d) {
+    if (!d) return '—';
+    const parts = d.split('-');
+    if (parts.length !== 3) return d;
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return `${parseInt(parts[2])} ${months[parseInt(parts[1])-1]} ${parts[0]}`;
+  }
+
+  async function loadRecords() {
+    try {
+      const res = await fetch("http://localhost:5000/records");
+      records = await res.json();
+    } catch(e) {
+      records = [];
+    }
+    render();
+  }
+
+  function render() {
+    // Split: income = has open/close or upi > 0 and exp === 0
+    const income   = records.filter(r => r.open !== undefined && (r.close > 0 || r.upi > 0) && !r.exp && !r.upiExp);
+    const expenses = records.filter(r => r.exp > 0 || r.upiExp > 0);
+
+    // Summary
+    const totalIncome  = income.reduce((s, r) => s + (r.totalProfit || 0), 0);
+    const totalExpense = expenses.reduce((s, r) => s + Math.abs(r.totalProfit || 0), 0);
+    const net          = totalIncome - totalExpense;
+
+    document.getElementById("sumIncome").textContent  = fmt(totalIncome);
+    document.getElementById("sumExpense").textContent = fmt(totalExpense);
+    document.getElementById("sumNet").textContent     = fmt(Math.abs(net));
+    const netWrap = document.getElementById("sumNetWrap");
+    netWrap.className = 'pill-value ' + (net >= 0 ? 'val-green' : 'val-red');
+    netWrap.innerHTML = `<span class="currency">₹</span><span id="sumNet">${fmt(Math.abs(net))}</span>`;
+
+    // Counts
+    document.getElementById("incomeCount").textContent  = income.length   ? `${income.length} entries`   : '';
+    document.getElementById("expenseCount").textContent = expenses.length ? `${expenses.length} entries` : '';
+
+    renderIncomeTable(income);
+    renderExpenseTable(expenses);
+  }
+
+  function renderIncomeTable(rows) {
+    const wrap = document.getElementById("incomeTableWrap");
+    if (!rows.length) {
+      wrap.innerHTML = '<div class="empty">No income records yet</div>';
+      return;
+    }
+    wrap.innerHTML = `
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Opening</th>
+            <th>Closing</th>
+            <th>Shop cash</th>
+            <th>UPI</th>
+            <th>Total</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map(r => `
+            <tr>
+              <td class="td-date">${fmtDate(r.date)}</td>
+              <td class="td-num">${fmt(r.open)}</td>
+              <td class="td-num">${fmt(r.close)}</td>
+              <td class="td-num val-green">+${fmt(r.close - r.open)}</td>
+              <td class="td-num val-green">+${fmt(r.upi)}</td>
+              <td class="td-num val-bold val-green">₹${fmt(r.totalProfit)}</td>
+              <td style="padding:0 10px">
+                <button class="btn-del" onclick="deleteEntry('${r._id}')">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    `;
+  }
+
+  function renderExpenseTable(rows) {
+    const wrap = document.getElementById("expenseTableWrap");
+    if (!rows.length) {
+      wrap.innerHTML = '<div class="empty">No expense records yet</div>';
+      return;
+    }
+    wrap.innerHTML = `
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Cash exp</th>
+            <th>UPI exp</th>
+            <th>Total</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map(r => `
+            <tr>
+              <td class="td-date">${fmtDate(r.date)}</td>
+              <td class="td-num val-red">−${fmt(r.exp)}</td>
+              <td class="td-num val-red">−${fmt(r.upiExp)}</td>
+              <td class="td-num val-bold val-red">₹${fmt(r.exp + r.upiExp)}</td>
+              <td style="padding:0 10px">
+                <button class="btn-del" onclick="deleteEntry('${r._id}')">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    `;
+  }
+
+  async function deleteEntry(id) {
+    if (!confirm("Delete this record?")) return;
+    try {
+      await fetch(`http://localhost:5000/records/${id}`, { method: "DELETE" });
+    } catch(e) { console.warn(e); }
+    records = records.filter(r => r._id !== id);
+    render();
+    const toast = document.getElementById("toast");
+    toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 2500);
+  }
+
+  loadRecords();
+</script>
+</body>
+</html>
