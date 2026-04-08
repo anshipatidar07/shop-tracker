@@ -38,6 +38,8 @@
 const express = require("express")
 const mongoose = require("mongoose")
 const cors = require("cors")
+import dotenv from "dotenv";
+dotenv.config();
 
 const app = express()
 const PORT = process.env.PORT || 5000
@@ -57,9 +59,7 @@ app.use((req, res, next) => {
 
 app.use(express.json())
 
-mongoose.connect(
-  "mongodb+srv://admin:Shop12345@shop-tracker.v3trtqm.mongodb.net/shop-tracker?retryWrites=true&w=majority"
-);
+mongoose.connect(process.env.MONGO_URI)
 
 mongoose.connection.once("open", () => {
   console.log("MongoDB connected")
