@@ -1,493 +1,246 @@
-<!-- <!DOCTYPE html>
-
-<html lang="en">
-
-<head>
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Expense Entry</title>
-
-<script src="https://cdn.tailwindcss.com"></script>
-
-</head>
-
-<body class="bg-gray-100 p-6">
-
-<div class="max-w-2xl mx-auto bg-white shadow rounded">
-
-<div class="bg-red-600 text-white p-4 text-xl font-bold">
-Expense Entry
-</div>
-
-<div class="p-6 space-y-4">
-
-<a href="history.html" class="text-blue-600 underline">View History</a>
-
-<div>
-<label>Date</label>
-<input type="date" id="dateInput" class="w-full border p-2 rounded">
-</div>
-
-<div>
-<label>Cash Expenses</label>
-<input type="text" id="expenses" placeholder="200,300"
-class="w-full border p-2 rounded">
-</div>
-
-<div>
-<label>UPI Expenses</label>
-<input type="text" id="upiExpenses" placeholder="100,50"
-class="w-full border p-2 rounded">
-</div>
-
-<div class="bg-red-100 p-4 rounded text-xl font-bold">
-Total Expense ₹ <span id="total">0</span>
-</div>
-
-<button onclick="saveExpense()" class="w-full bg-red-600 text-white p-3 rounded font-bold">
-Save Expense
-</button>
-
-</div>
-
-</div>
-
-<script>
-
-function parseNumber(value){
-
-if(!value) return 0
-
-if(value.includes(",")){
-
-return value.split(",")
-.map(v=>parseFloat(v.trim())||0)
-.reduce((a,b)=>a+b,0)
-
-}
-
-return parseFloat(value)||0
-
-}
-
-function calculate(){
-
-const exp=parseNumber(expenses.value)
-const upiExp=parseNumber(upiExpenses.value)
-
-document.getElementById("total").innerText=exp+upiExp
-
-}
-
-["expenses","upiExpenses"].forEach(id=>{
-document.getElementById(id).addEventListener("input",calculate)
-})
-
-async function saveExpense(){
-
-const entry={
-
-date:dateInput.value,
-
-open:0,
-
-close:0,
-
-exp:parseNumber(expenses.value),
-
-upi:0,
-
-upiExp:parseNumber(upiExpenses.value)
-
-}
-
-entry.totalProfit=-(entry.exp+entry.upiExp)
-
-await fetch("http://localhost:5000/records",{
-
-method:"POST",
-
-headers:{
-"Content-Type":"application/json"
-},
-
-body:JSON.stringify(entry)
-
-})
-
-alert("Expense Saved")
-
-}
-
-document.getElementById("dateInput").valueAsDate=new Date()
-
-</script>
-
-</body>
-</html> -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Expense Entry — The New Shop</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Expense Entry — The New Shop</title>
 
-  :root {
-    --red-light:  #FCEBEB;
-    --red-mid:    #E24B4A;
-    --red-dark:   #A32D2D;
-    --red-deep:   #791F1F;
-    --red-border: #F7C1C1;
-    --surface:    #f5f4f0;
-    --card:       #ffffff;
-    --border:     #e8e6e0;
-    --border-mid: #d3d1c7;
-    --text:       #1a1a18;
-    --text-muted: #888780;
-    --text-faint: #b4b2a9;
-  }
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500&display=swap"
+    rel="stylesheet"
+  />
 
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--surface);
-    min-height: 100vh;
-    padding: 2rem 1rem 4rem;
-    color: var(--text);
-  }
-
-  .wrap {
-    max-width: 460px;
-    margin: 0 auto;
-  }
-
-  .back {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 13px;
-    color: var(--text-muted);
-    text-decoration: none;
-    margin-bottom: 1.5rem;
-    transition: color 0.15s;
-  }
-  .back:hover { color: var(--text); }
-
-  .page-header { margin-bottom: 2rem; }
-  .page-header .eyebrow {
-    font-size: 11px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--red-mid);
-    margin-bottom: 6px;
-  }
-  .page-header h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: 28px;
-    font-weight: 700;
-    color: var(--text);
-    letter-spacing: -0.3px;
-  }
-
-  .card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 1.5rem;
-    margin-bottom: 12px;
-  }
-
-  .card-title {
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--text-faint);
-    margin-bottom: 1rem;
-  }
-
-  .field { margin-bottom: 1rem; }
-  .field:last-child { margin-bottom: 0; }
-
-  label {
-    display: block;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text-muted);
-    margin-bottom: 6px;
-  }
-
-  .field-hint {
-    font-size: 11px;
-    color: var(--text-faint);
-    margin-top: 4px;
-  }
-
-  input[type="date"],
-  input[type="text"] {
-    width: 100%;
-    padding: 10px 14px;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 15px;
-    color: var(--text);
-    background: var(--surface);
-    outline: none;
-    transition: border-color 0.15s, background 0.15s;
-    appearance: none;
-    -webkit-appearance: none;
-  }
-  input:focus {
-    border-color: var(--red-mid);
-    background: #fff;
-  }
-
-  /* Display pills */
-  .display-row {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 12px;
-  }
-  .display-pill {
-    flex: 1;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 14px 16px;
-  }
-  .display-pill .pill-label {
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--text-faint);
-    margin-bottom: 6px;
-  }
-  .display-pill .pill-value {
-    font-family: 'Playfair Display', serif;
-    font-size: 20px;
-    font-weight: 600;
-    color: var(--text);
-  }
-  .display-pill .pill-value .currency {
-    font-size: 13px;
-    color: var(--text-muted);
-    font-family: 'DM Sans', sans-serif;
-    font-weight: 400;
-    margin-right: 2px;
-  }
-
-  /* Total block */
-  .total-block {
-    background: var(--red-light);
-    border: 1px solid var(--red-border);
-    border-radius: 14px;
-    padding: 1.25rem 1.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 12px;
-  }
-  .total-block .total-label {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--red-deep);
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-  }
-  .total-block .total-value {
-    font-family: 'Playfair Display', serif;
-    font-size: 26px;
-    font-weight: 700;
-    color: var(--red-dark);
-  }
-  .total-block .total-value .currency {
-    font-size: 16px;
-    font-family: 'DM Sans', sans-serif;
-    font-weight: 500;
-    margin-right: 2px;
-  }
-
-  /* Save button */
-  .btn-save {
-    width: 100%;
-    padding: 14px;
-    background: var(--red-dark);
-    color: #fff;
-    border: none;
-    border-radius: 12px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 15px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.15s, transform 0.1s;
-    letter-spacing: 0.02em;
-  }
-  .btn-save:hover  { background: var(--red-deep); }
-  .btn-save:active { transform: scale(0.99); }
-
-  /* Toast */
-  .toast {
-    position: fixed;
-    bottom: 2rem;
-    left: 50%;
-    transform: translateX(-50%) translateY(20px);
-    background: var(--text);
-    color: #fff;
-    font-size: 14px;
-    padding: 10px 20px;
-    border-radius: 99px;
-    opacity: 0;
-    transition: opacity 0.2s, transform 0.2s;
-    pointer-events: none;
-    white-space: nowrap;
-  }
-  .toast.show {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
-
-  .history-link {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    text-decoration: none;
-    color: var(--text-muted);
-    font-size: 13px;
-    margin-top: 1rem;
-    transition: color 0.15s;
-  }
-  .history-link:hover { color: var(--text); }
-</style>
-</head>
-<body>
-<div class="wrap">
-
-  <a href="index.html" class="back">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    The New Shop
-  </a>
-
-  <div class="page-header">
-    <p class="eyebrow">Daily Entry</p>
-    <h1>Expenses</h1>
-  </div>
-
-  <!-- Date -->
-  <div class="card">
-    <p class="card-title">Date</p>
-    <div class="field">
-      <input type="date" id="dateInput">
-    </div>
-  </div>
-
-  <!-- Cash expenses -->
-  <div class="card">
-    <p class="card-title">Cash</p>
-    <div class="field">
-      <label>Cash expenses</label>
-      <input type="text" id="expenses" placeholder="e.g. 200, 300">
-      <p class="field-hint">Separate multiple amounts with commas</p>
-    </div>
-  </div>
-
-  <!-- UPI expenses -->
-  <div class="card">
-    <p class="card-title">UPI</p>
-    <div class="field">
-      <label>UPI expenses</label>
-      <input type="text" id="upiExpenses" placeholder="e.g. 100, 50">
-      <p class="field-hint">Separate multiple amounts with commas</p>
-    </div>
-  </div>
-
-  <!-- Display pills -->
-  <div class="display-row">
-    <div class="display-pill">
-      <p class="pill-label">Cash</p>
-      <p class="pill-value"><span class="currency">₹</span><span id="cashVal">0</span></p>
-    </div>
-    <div class="display-pill">
-      <p class="pill-label">UPI</p>
-      <p class="pill-value"><span class="currency">₹</span><span id="upiVal">0</span></p>
-    </div>
-  </div>
-
-  <!-- Total -->
-  <div class="total-block">
-    <span class="total-label">Total expense</span>
-    <span class="total-value"><span class="currency">₹</span><span id="total">0</span></span>
-  </div>
-
-  <button class="btn-save" onclick="saveExpense()">Save expense</button>
-
-  <a href="history.html" class="history-link">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M8 9h8M8 13h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-    View history
-  </a>
-
-</div>
-
-<div class="toast" id="toast">Expense saved!</div>
-
-<script>
-  function parseNumber(value) {
-    if (!value) return 0;
-    if (value.includes(",")) {
-      return value.split(",").map(v => parseFloat(v.trim()) || 0).reduce((a, b) => a + b, 0);
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
-    return parseFloat(value) || 0;
-  }
 
-  function fmt(n) {
-    return n.toLocaleString('en-IN', { maximumFractionDigits: 2 });
-  }
+    :root {
+      --red-light:  #FCEBEB;
+      --red-mid:    #E24B4A;
+      --red-dark:   #A32D2D;
+      --red-deep:   #791F1F;
+      --red-border: #F7C1C1;
+      --surface:    #f5f4f0;
+      --card:       #ffffff;
+      --border:     #e8e6e0;
+      --border-mid: #d3d1c7;
+      --text:       #1a1a18;
+      --text-muted: #888780;
+      --text-faint: #b4b2a9;
+    }
 
-  function calculate() {
-    const exp    = parseNumber(document.getElementById("expenses").value);
-    const upiExp = parseNumber(document.getElementById("upiExpenses").value);
-    document.getElementById("cashVal").textContent = fmt(exp);
-    document.getElementById("upiVal").textContent  = fmt(upiExp);
-    document.getElementById("total").textContent   = fmt(exp + upiExp);
-  }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--surface);
+      min-height: 100vh;
+      padding: 2rem 1rem 4rem;
+      color: var(--text);
+    }
 
-  ["expenses", "upiExpenses"].forEach(id => {
-    document.getElementById(id).addEventListener("input", calculate);
-  });
+    .wrap {
+      max-width: 460px;
+      margin: 0 auto;
+    }
 
-  async function saveExpense() {
-    const exp    = parseNumber(document.getElementById("expenses").value);
-    const upiExp = parseNumber(document.getElementById("upiExpenses").value);
+    .back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--text-muted);
+      text-decoration: none;
+      margin-bottom: 1.5rem;
+      transition: color 0.15s;
+    }
 
-    const entry = {
-      date: document.getElementById("dateInput").value,
-      open: 0, close: 0, exp, upi: 0, upiExp,
-      totalProfit: -(exp + upiExp)
-    };
+    .back:hover {
+      color: var(--text);
+    }
 
-    try {
+    .page-header {
+      margin-bottom: 2rem;
+    }
+
+    .page-header .eyebrow {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--red-mid);
+      margin-bottom: 6px;
+    }
+
+    .page-header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 12px;
+    }
+
+    .card-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      margin-bottom: 1rem;
+    }
+
+    .field {
+      margin-bottom: 1rem;
+    }
+
+    .field:last-child {
+      margin-bottom: 0;
+    }
+
+    label {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    input {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 15px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+    }
+
+    .display-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .display-pill {
+      flex: 1;
+      background: var(--surface);
+      padding: 14px;
+      border-radius: 12px;
+    }
+
+    .total-block {
+      background: var(--red-light);
+      padding: 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      border-radius: 14px;
+      margin-bottom: 12px;
+    }
+
+    .btn-save {
+      width: 100%;
+      padding: 14px;
+      background: var(--red-dark);
+      color: white;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--text);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 99px;
+      opacity: 0;
+    }
+
+    .toast.show {
+      opacity: 1;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <a href="index.html" class="back">← The New Shop</a>
+
+    <div class="page-header">
+      <p class="eyebrow">Daily Entry</p>
+      <h1>Expenses</h1>
+    </div>
+
+    <!-- Date -->
+    <div class="card">
+      <p class="card-title">Date</p>
+      <input type="date" id="dateInput" />
+    </div>
+
+    <!-- Cash -->
+    <div class="card">
+      <p class="card-title">Cash</p>
+      <input type="text" id="expenses" placeholder="200, 300" />
+    </div>
+
+    <!-- UPI -->
+    <div class="card">
+      <p class="card-title">UPI</p>
+      <input type="text" id="upiExpenses" placeholder="100, 50" />
+    </div>
+
+    <div class="display-row">
+      <div class="display-pill">Cash: ₹<span id="cashVal">0</span></div>
+      <div class="display-pill">UPI: ₹<span id="upiVal">0</span></div>
+    </div>
+
+    <div class="total-block">
+      <span>Total</span>
+      <span>₹<span id="total">0</span></span>
+    </div>
+
+    <button class="btn-save" onclick="saveExpense()">Save</button>
+  </div>
+
+  <div class="toast" id="toast">Saved!</div>
+
+  <script>
+    function parseNumber(value) {
+      if (!value) return 0;
+      return value.split(",").reduce((sum, v) => sum + (parseFloat(v) || 0), 0);
+    }
+
+    function calculate() {
+      const exp = parseNumber(document.getElementById("expenses").value);
+      const upi = parseNumber(document.getElementById("upiExpenses").value);
+
+      document.getElementById("cashVal").textContent = exp;
+      document.getElementById("upiVal").textContent = upi;
+      document.getElementById("total").textContent = exp + upi;
+    }
+
+    ["expenses", "upiExpenses"].forEach(id =>
+      document.getElementById(id).addEventListener("input", calculate)
+    );
+
+    async function saveExpense() {
+      const exp = parseNumber(document.getElementById("expenses").value);
+      const upi = parseNumber(document.getElementById("upiExpenses").value);
+
       await fetch("https://shop-tracker-y8k2.onrender.com/records", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(entry)
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ exp, upi })
       });
-    } catch (e) {
-      console.warn("Could not reach server:", e);
+
+      document.getElementById("toast").classList.add("show");
     }
 
-    const toast = document.getElementById("toast");
-    toast.classList.add("show");
-    setTimeout(() => toast.classList.remove("show"), 2500);
-  }
-
-  document.getElementById("dateInput").valueAsDate = new Date();
-</script>
+    document.getElementById("dateInput").valueAsDate = new Date();
+  </script>
 </body>
 </html>

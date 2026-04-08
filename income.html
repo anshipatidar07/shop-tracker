@@ -1,529 +1,219 @@
-<!-- <!DOCTYPE html>
-
-<html lang="en">
-
-<head>
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Income Entry</title>
-
-<script src="https://cdn.tailwindcss.com"></script>
-
-</head>
-
-<body class="bg-gray-100 p-6">
-
-<div class="max-w-2xl mx-auto bg-white shadow rounded">
-
-<div class="bg-green-600 text-white p-4 text-xl font-bold">
-Income Entry
-</div>
-
-<div class="p-6 space-y-4">
-
-<a href="history.html" class="text-blue-600 underline">View History</a>
-
-<div>
-<label>Date</label>
-<input type="date" id="dateInput" class="w-full border p-2 rounded">
-</div>
-
-<div>
-<label>Opening Cash</label>
-<input type="text" id="openingCash" class="w-full border p-2 rounded">
-</div>
-
-<div>
-<label>Closing Cash</label>
-<input type="text" id="closingCash" class="w-full border p-2 rounded">
-</div>
-
-<div>
-<label>UPI Income</label>
-<input type="text" id="upiIncome" class="w-full border p-2 rounded">
-</div>
-
-<div class="bg-green-100 p-4 rounded text-xl font-bold">
-Total ₹ <span id="total">0</span>
-</div>
-
-<button onclick="saveIncome()" class="w-full bg-green-600 text-white p-3 rounded font-bold">
-Save Income
-</button>
-
-</div>
-
-</div>
-
-<script>
-
-function parseNumber(value){
-
-if(!value) return 0
-
-if(value.includes(",")){
-
-return value.split(",")
-.map(v=>parseFloat(v.trim())||0)
-.reduce((a,b)=>a+b,0)
-
-}
-
-return parseFloat(value)||0
-
-}
-
-function calculate(){
-
-const open=parseNumber(openingCash.value)
-const close=parseNumber(closingCash.value)
-const upi=parseNumber(upiIncome.value)
-
-const total=(close-open)+upi
-
-document.getElementById("total").innerText=total
-
-}
-
-["openingCash","closingCash","upiIncome"].forEach(id=>{
-document.getElementById(id).addEventListener("input",calculate)
-})
-
-async function saveIncome(){
-
-const entry={
-
-date:dateInput.value,
-
-open:parseNumber(openingCash.value),
-
-close:parseNumber(closingCash.value),
-
-exp:0,
-
-upi:parseNumber(upiIncome.value),
-
-upiExp:0
-
-}
-
-entry.totalProfit=(entry.close-entry.open)+entry.upi
-
-await fetch("http://localhost:5000/records",{
-
-method:"POST",
-
-headers:{
-"Content-Type":"application/json"
-},
-
-body:JSON.stringify(entry)
-
-})
-
-alert("Income Saved")
-
-}
-
-document.getElementById("dateInput").valueAsDate=new Date()
-
-</script>
-
-</body>
-</html> -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Income Entry — The New Shop</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Income Entry — The New Shop</title>
 
-  :root {
-    --green-light: #EAF3DE;
-    --green-mid:   #639922;
-    --green-dark:  #3B6D11;
-    --green-deep:  #27500A;
-    --surface:     #f5f4f0;
-    --card:        #ffffff;
-    --border:      #e8e6e0;
-    --border-mid:  #d3d1c7;
-    --text:        #1a1a18;
-    --text-muted:  #888780;
-    --text-faint:  #b4b2a9;
-  }
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500&display=swap"
+    rel="stylesheet"
+  />
 
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--surface);
-    min-height: 100vh;
-    padding: 2rem 1rem 4rem;
-    color: var(--text);
-  }
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-  .wrap {
-    max-width: 460px;
-    margin: 0 auto;
-  }
+    :root {
+      --green-light: #EAF3DE;
+      --green-mid:   #639922;
+      --green-dark:  #3B6D11;
+      --green-deep:  #27500A;
+      --surface:     #f5f4f0;
+      --card:        #ffffff;
+      --border:      #e8e6e0;
+      --text:        #1a1a18;
+      --text-muted:  #888780;
+      --text-faint:  #b4b2a9;
+    }
 
-  /* Back link */
-  .back {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 13px;
-    color: var(--text-muted);
-    text-decoration: none;
-    margin-bottom: 1.5rem;
-    transition: color 0.15s;
-  }
-  .back:hover { color: var(--text); }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--surface);
+      min-height: 100vh;
+      padding: 2rem 1rem 4rem;
+      color: var(--text);
+    }
 
-  /* Page header */
-  .page-header {
-    margin-bottom: 2rem;
-  }
-  .page-header .eyebrow {
-    font-size: 11px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--green-mid);
-    margin-bottom: 6px;
-  }
-  .page-header h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: 28px;
-    font-weight: 700;
-    color: var(--text);
-    letter-spacing: -0.3px;
-  }
+    .wrap {
+      max-width: 460px;
+      margin: 0 auto;
+    }
 
-  /* Card */
-  .card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 1.5rem;
-    margin-bottom: 12px;
-  }
+    .back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--text-muted);
+      text-decoration: none;
+      margin-bottom: 1.5rem;
+    }
 
-  .card-title {
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--text-faint);
-    margin-bottom: 1rem;
-  }
+    .page-header {
+      margin-bottom: 2rem;
+    }
 
-  /* Field */
-  .field { margin-bottom: 1rem; }
-  .field:last-child { margin-bottom: 0; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 12px;
+    }
 
-  label {
-    display: block;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text-muted);
-    margin-bottom: 6px;
-  }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
 
-  input[type="date"],
-  input[type="text"],
-  input[type="number"] {
-    width: 100%;
-    padding: 10px 14px;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 15px;
-    color: var(--text);
-    background: var(--surface);
-    outline: none;
-    transition: border-color 0.15s, background 0.15s;
-    appearance: none;
-    -webkit-appearance: none;
-  }
-  input:focus {
-    border-color: var(--green-mid);
-    background: #fff;
-  }
+    input {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
 
-  /* Two-col grid for cash fields */
-  .grid-2 {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-  }
+    .display-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
 
-  /* Display pills — shop cash and UPI */
-  .display-row {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 12px;
-  }
-  .display-pill {
-    flex: 1;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 14px 16px;
-  }
-  .display-pill .pill-label {
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--text-faint);
-    margin-bottom: 6px;
-  }
-  .display-pill .pill-value {
-    font-family: 'Playfair Display', serif;
-    font-size: 20px;
-    font-weight: 600;
-    color: var(--text);
-  }
-  .display-pill .pill-value .currency {
-    font-size: 13px;
-    color: var(--text-muted);
-    font-family: 'DM Sans', sans-serif;
-    font-weight: 400;
-    margin-right: 2px;
-  }
+    .display-pill {
+      flex: 1;
+      padding: 14px;
+      background: var(--surface);
+      border-radius: 12px;
+    }
 
-  /* Total block */
-  .total-block {
-    background: var(--green-light);
-    border: 1px solid #c0dd97;
-    border-radius: 14px;
-    padding: 1.25rem 1.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 12px;
-  }
-  .total-block .total-label {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--green-deep);
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-  }
-  .total-block .total-value {
-    font-family: 'Playfair Display', serif;
-    font-size: 26px;
-    font-weight: 700;
-    color: var(--green-dark);
-  }
-  .total-block .total-value .currency {
-    font-size: 16px;
-    font-family: 'DM Sans', sans-serif;
-    font-weight: 500;
-    margin-right: 2px;
-  }
+    .total-block {
+      background: var(--green-light);
+      padding: 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      border-radius: 14px;
+      margin-bottom: 12px;
+    }
 
-  /* Save button */
-  .btn-save {
-    width: 100%;
-    padding: 14px;
-    background: var(--green-dark);
-    color: #fff;
-    border: none;
-    border-radius: 12px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 15px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.15s, transform 0.1s;
-    letter-spacing: 0.02em;
-  }
-  .btn-save:hover  { background: var(--green-deep); }
-  .btn-save:active { transform: scale(0.99); }
+    .btn-save {
+      width: 100%;
+      padding: 14px;
+      background: var(--green-dark);
+      color: white;
+      border-radius: 12px;
+      cursor: pointer;
+    }
 
-  /* Toast */
-  .toast {
-    position: fixed;
-    bottom: 2rem;
-    left: 50%;
-    transform: translateX(-50%) translateY(20px);
-    background: var(--text);
-    color: #fff;
-    font-size: 14px;
-    padding: 10px 20px;
-    border-radius: 99px;
-    opacity: 0;
-    transition: opacity 0.2s, transform 0.2s;
-    pointer-events: none;
-    white-space: nowrap;
-  }
-  .toast.show {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--text);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 99px;
+      opacity: 0;
+    }
 
-  /* History link */
-  .history-link {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    text-decoration: none;
-    color: var(--text-muted);
-    font-size: 13px;
-    margin-top: 1rem;
-    transition: color 0.15s;
-  }
-  .history-link:hover { color: var(--text); }
-</style>
+    .toast.show {
+      opacity: 1;
+    }
+  </style>
 </head>
+
 <body>
-<div class="wrap">
+  <div class="wrap">
+    <a href="index.html" class="back">← The New Shop</a>
 
-  <a href="index.html" class="back">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    The New Shop
-  </a>
-
-  <div class="page-header">
-    <p class="eyebrow">Daily Entry</p>
-    <h1>Income</h1>
-  </div>
-
-  <!-- Date card -->
-  <div class="card">
-    <p class="card-title">Date</p>
-    <div class="field">
-      <input type="date" id="dateInput">
+    <div class="page-header">
+      <p>Daily Entry</p>
+      <h1>Income</h1>
     </div>
-  </div>
 
-  <!-- Cash card -->
-  <div class="card">
-    <p class="card-title">Cash</p>
-    <div class="grid-2">
-      <div class="field">
-        <label>Opening cash</label>
-        <input type="text" id="openingCash" placeholder="0">
-      </div>
-      <div class="field">
-        <label>Closing cash</label>
-        <input type="text" id="closingCash" placeholder="0">
+    <!-- Date -->
+    <div class="card">
+      <input type="date" id="dateInput" />
+    </div>
+
+    <!-- Cash -->
+    <div class="card">
+      <div class="grid-2">
+        <input type="text" id="openingCash" placeholder="Opening" />
+        <input type="text" id="closingCash" placeholder="Closing" />
       </div>
     </div>
-  </div>
 
-  <!-- UPI card -->
-  <div class="card">
-    <p class="card-title">UPI</p>
-    <div class="field">
-      <label>UPI income</label>
-      <input type="text" id="upiIncome" placeholder="0">
+    <!-- UPI -->
+    <div class="card">
+      <input type="text" id="upiIncome" placeholder="UPI Income" />
     </div>
-  </div>
 
-  <!-- Display pills: shop cash + upi -->
-  <div class="display-row">
-    <div class="display-pill">
-      <p class="pill-label">Shop cash</p>
-      <p class="pill-value" id="dispCash"><span class="currency">₹</span><span id="cashVal">0</span></p>
+    <!-- Display -->
+    <div class="display-row">
+      <div class="display-pill">
+        Cash: ₹<span id="cashVal">0</span>
+      </div>
+      <div class="display-pill">
+        UPI: ₹<span id="upiVal">0</span>
+      </div>
     </div>
-    <div class="display-pill">
-      <p class="pill-label">UPI</p>
-      <p class="pill-value" id="dispUpi"><span class="currency">₹</span><span id="upiVal">0</span></p>
+
+    <div class="total-block">
+      <span>Total</span>
+      <span>₹<span id="total">0</span></span>
     </div>
+
+    <button class="btn-save" onclick="saveIncome()">Save</button>
   </div>
 
-  <!-- Total -->
-  <div class="total-block">
-    <span class="total-label">Total income</span>
-    <span class="total-value"><span class="currency">₹</span><span id="total">0</span></span>
-  </div>
+  <div class="toast" id="toast">Saved!</div>
 
-  <!-- Save -->
-  <button class="btn-save" onclick="saveIncome()">Save income</button>
-
-  <a href="history.html" class="history-link">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M8 9h8M8 13h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-    View history
-  </a>
-
-</div>
-
-<div class="toast" id="toast">Income saved!</div>
-
-<script>
-  function parseNumber(value) {
-    if (!value) return 0;
-    if (value.includes(",")) {
-      return value.split(",").map(v => parseFloat(v.trim()) || 0).reduce((a, b) => a + b, 0);
-    }
-    return parseFloat(value) || 0;
-  }
-
-  function fmt(n) {
-    return n.toLocaleString('en-IN', { maximumFractionDigits: 2 });
-  }
-
-  function calculate() {
-    const open  = parseNumber(document.getElementById("openingCash").value);
-    const close = parseNumber(document.getElementById("closingCash").value);
-    const upi   = parseNumber(document.getElementById("upiIncome").value);
-
-    const shopCash = close - open;
-    const total    = shopCash + upi;
-
-    document.getElementById("cashVal").textContent = fmt(shopCash);
-    document.getElementById("upiVal").textContent  = fmt(upi);
-    document.getElementById("total").textContent   = fmt(total);
-  }
-
-  ["openingCash", "closingCash", "upiIncome"].forEach(id => {
-    document.getElementById(id).addEventListener("input", calculate);
-  });
-
-  async function saveIncome() {
-  const open  = parseNumber(document.getElementById("openingCash").value);
-  const close = parseNumber(document.getElementById("closingCash").value);
-  const upi   = parseNumber(document.getElementById("upiIncome").value);
-
-  const entry = {
-    date: document.getElementById("dateInput").value,
-    open, close, exp: 0, upi, upiExp: 0,
-    totalProfit: (close - open) + upi
-  };
-
-  try {
-    const res = await fetch("https://shop-tracker-y8k2.onrender.com/records", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(entry)
-    });
-
-    if (!res.ok) {
-      throw new Error("Failed to save");
+  <script>
+    function parseNumber(value) {
+      if (!value) return 0;
+      return value.split(",").reduce((sum, v) => sum + (parseFloat(v) || 0), 0);
     }
 
-    const toast = document.getElementById("toast");
-    toast.innerText = "Income saved!";
-    toast.classList.add("show");
-    setTimeout(() => toast.classList.remove("show"), 2500);
+    function calculate() {
+      const open = parseNumber(document.getElementById("openingCash").value);
+      const close = parseNumber(document.getElementById("closingCash").value);
+      const upi = parseNumber(document.getElementById("upiIncome").value);
 
-  } catch (e) {
-    console.error(e);
+      const cash = close - open;
+      const total = cash + upi;
 
-    const toast = document.getElementById("toast");
-    toast.innerText = "❌ Failed to save";
-    toast.classList.add("show");
-    setTimeout(() => toast.classList.remove("show"), 2500);
-  }
-}
+      document.getElementById("cashVal").textContent = cash;
+      document.getElementById("upiVal").textContent = upi;
+      document.getElementById("total").textContent = total;
+    }
 
-  document.getElementById("dateInput").valueAsDate = new Date();
-</script>
+    ["openingCash", "closingCash", "upiIncome"].forEach(id =>
+      document.getElementById(id).addEventListener("input", calculate)
+    );
+
+    async function saveIncome() {
+      const open = parseNumber(document.getElementById("openingCash").value);
+      const close = parseNumber(document.getElementById("closingCash").value);
+      const upi = parseNumber(document.getElementById("upiIncome").value);
+
+      await fetch("https://shop-tracker-y8k2.onrender.com/records", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ open, close, upi })
+      });
+
+      document.getElementById("toast").classList.add("show");
+    }
+
+    document.getElementById("dateInput").valueAsDate = new Date();
+  </script>
 </body>
 </html>
