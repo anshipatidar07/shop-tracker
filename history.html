@@ -5,129 +5,344 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>History — The New Shop</title>
 
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --green-light:#EAF3DE; --green-dark:#3B6D11;
-      --red-light:#FCEBEB; --red-dark:#A32D2D;
-      --blue-light:#E7F0FF; --blue-dark:#1E4FCC;
+      --ink: #0f0e0b;
+      --ink-soft: #5a5850;
+      --ink-ghost: #a8a49a;
+      --paper: #f7f5f0;
+      --paper-warm: #ede9e0;
+      --white: #ffffff;
+      --border: #e2ddd5;
 
-      --surface:#f5f4f0; --card:#fff; --border:#e8e6e0;
-      --text:#1a1a18; --text-muted:#888780; --text-faint:#b4b2a9;
+      --sage: #4a7c2f;
+      --sage-bg: #eaf3e0;
+      --sage-border: #c4dba8;
+
+      --crimson: #9b2c2c;
+      --crimson-bg: #fceaea;
+      --crimson-border: #f0b8b8;
+
+      --indigo: #2d4fa8;
+      --indigo-bg: #e8eeff;
+      --indigo-border: #b8c8f5;
+
+      --amber: #8a5c00;
+      --amber-bg: #fef6e0;
+      --amber-border: #f0d885;
     }
 
     body {
-      font-family:'DM Sans',sans-serif;
-      background:var(--surface);
-      padding:2rem 1rem;
-      color:var(--text);
+      font-family: 'Outfit', sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      min-height: 100vh;
+      padding: 2.5rem 1.25rem 5rem;
     }
 
-    .wrap { max-width:800px; margin:auto; }
+    .wrap { max-width: 860px; margin: auto; }
 
-    .page-header { margin-bottom:2rem; }
-    .page-header h1 {
-      font-family:'Playfair Display',serif;
-      font-size:28px;
+    /* Header */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 2.5rem;
     }
 
-    /* Buttons */
+    .back-link {
+      font-size: 12px;
+      color: var(--ink-ghost);
+      text-decoration: none;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .page-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 42px;
+      font-weight: 600;
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+
+    .page-title .dot {
+      color: var(--sage);
+    }
+
+    .date-chip {
+      font-size: 12px;
+      color: var(--ink-ghost);
+      background: var(--paper-warm);
+      border: 1px solid var(--border);
+      padding: 5px 12px;
+      border-radius: 99px;
+      margin-top: 6px;
+    }
+
+    /* Action bar */
     .actions {
-      display:flex;
-      gap:10px;
-      margin-bottom:2rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 2rem;
     }
 
     .btn {
-      padding:8px 14px;
-      border-radius:99px;
-      font-size:13px;
-      text-decoration:none;
-      border:1px solid var(--border);
-      background:var(--card);
-      color:var(--text);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 99px;
+      font-size: 13px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 500;
+      text-decoration: none;
+      border: 1px solid var(--border);
+      background: var(--white);
+      color: var(--ink);
+      cursor: pointer;
+      transition: all 0.15s;
     }
 
-    .btn.blue {
-      background:var(--blue-light);
-      color:var(--blue-dark);
-      border-color:#c7d9ff;
+    .btn:hover { background: var(--paper-warm); }
+
+    .btn.green { background: var(--sage-bg); color: var(--sage); border-color: var(--sage-border); }
+    .btn.red   { background: var(--crimson-bg); color: var(--crimson); border-color: var(--crimson-border); }
+    .btn.blue  { background: var(--indigo-bg); color: var(--indigo); border-color: var(--indigo-border); }
+
+    /* Filter row */
+    .filter-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .filter-row input, .filter-row select {
+      font-family: 'Outfit', sans-serif;
+      font-size: 13px;
+      padding: 8px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--white);
+      color: var(--ink);
+    }
+
+    /* Section label */
+    .section-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--ink-ghost);
+      margin-bottom: 10px;
+      padding-left: 4px;
     }
 
     /* Table card */
     .card {
-      background:var(--card);
-      border:1px solid var(--border);
-      border-radius:16px;
-      margin-bottom:2rem;
-      overflow:hidden;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      margin-bottom: 1.5rem;
+      overflow: hidden;
     }
 
-    .card-header {
-      display:flex;
-      justify-content:space-between;
-      padding:1rem;
-      font-size:13px;
-      color:var(--text-muted);
+    .card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
     }
 
+    .card-head-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card-tag {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .total-chip {
+      font-size: 12px;
+      padding: 3px 10px;
+      border-radius: 99px;
+      font-weight: 500;
+    }
+
+    .total-chip.green { background: var(--sage-bg); color: var(--sage); }
+    .total-chip.red   { background: var(--crimson-bg); color: var(--crimson); }
+    .total-chip.blue  { background: var(--indigo-bg); color: var(--indigo); }
+    .total-chip.amber { background: var(--amber-bg); color: var(--amber); }
+
+    .dl-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 500;
+      color: var(--ink-ghost);
+      background: none;
+      border: 1px solid var(--border);
+      padding: 5px 12px;
+      border-radius: 99px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .dl-btn:hover { color: var(--ink); border-color: var(--ink-soft); }
+
+    /* Table */
     table {
-      width:100%;
-      border-collapse:collapse;
+      width: 100%;
+      border-collapse: collapse;
     }
 
-    th {
-      background:var(--surface);
-      font-size:11px;
-      text-transform:uppercase;
-      color:var(--text-faint);
-      padding:10px;
-      text-align:right;
+    thead th {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--ink-ghost);
+      font-weight: 500;
+      padding: 10px 18px;
+      text-align: right;
+      background: var(--paper);
     }
 
-    th:first-child, td:first-child { text-align:left; }
+    thead th:first-child { text-align: left; }
 
-    td {
-      padding:12px 10px;
-      border-bottom:1px solid var(--border);
-      text-align:right;
+    tbody td {
+      padding: 13px 18px;
+      font-size: 14px;
+      border-bottom: 1px solid var(--border);
+      text-align: right;
+      color: var(--ink);
     }
 
-    tr:last-child td { border-bottom:none; }
+    tbody td:first-child { text-align: left; color: var(--ink-soft); font-size: 13px; }
 
-    .green { color:var(--green-dark); }
-    .red { color:var(--red-dark); }
+    tbody tr:last-child td { border-bottom: none; }
+
+    tbody tr:hover td { background: var(--paper); }
+
+    .num-green { color: var(--sage); font-weight: 500; }
+    .num-red   { color: var(--crimson); font-weight: 500; }
+    .num-blue  { color: var(--indigo); font-weight: 500; }
+    .num-amber { color: var(--amber); font-weight: 500; }
+
+    .badge {
+      display: inline-block;
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 99px;
+      margin-left: 4px;
+    }
+
+    .badge.up { background: var(--sage-bg); color: var(--sage); }
+    .badge.dn { background: var(--crimson-bg); color: var(--crimson); }
+
+    .empty-row td {
+      color: var(--ink-ghost);
+      text-align: center;
+      padding: 24px;
+      font-size: 13px;
+    }
+
+    /* Loading */
+    .loading-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(247,245,240,0.85);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      gap: 12px;
+    }
+
+    .spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid var(--border);
+      border-top-color: var(--sage);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .loading-text {
+      font-size: 13px;
+      color: var(--ink-ghost);
+    }
+
+    /* Responsive */
+    @media (max-width: 500px) {
+      .page-title { font-size: 32px; }
+    }
   </style>
 </head>
 
 <body>
+<div class="loading-overlay" id="loader">
+  <div class="spinner"></div>
+  <div class="loading-text">Loading records…</div>
+</div>
+
 <div class="wrap">
 
-  <div class="page-header">
-    <h1>History</h1>
+  <div class="top-bar">
+    <div>
+      <a href="index.html" class="back-link">← The New Shop</a>
+      <div class="page-title">History<span class="dot">.</span></div>
+    </div>
+    <div class="date-chip" id="todayLabel"></div>
   </div>
 
-  <!-- Buttons -->
+  <!-- Actions -->
   <div class="actions">
-    <a href="income.html" class="btn">+ Income</a>
-    <a href="expenses.html" class="btn">+ Expense</a>
+    <a href="income.html" class="btn green">+ Income</a>
+    <a href="expenses.html" class="btn red">+ Expense</a>
     <a href="appIncome.html" class="btn blue">+ App Income</a>
+    <button class="btn" onclick="downloadAllExcel()">⬇ Export All (Excel)</button>
   </div>
 
-  <!-- Income -->
+  <!-- Filter -->
+  <div class="filter-row">
+    <input type="month" id="monthFilter" onchange="render()" />
+    <select id="sortOrder" onchange="render()">
+      <option value="desc">Newest first</option>
+      <option value="asc">Oldest first</option>
+    </select>
+  </div>
+
+  <!-- 1. Income Table -->
+  <p class="section-label">Income</p>
   <div class="card">
-    <div class="card-header">
-      <span>Income</span>
-      <span onclick="downloadCSV('income')" style="cursor:pointer;">Download</span>
+    <div class="card-head">
+      <div class="card-head-left">
+        <span class="card-tag">Shop Income</span>
+        <span class="total-chip green" id="incomeTotalChip">₹0</span>
+      </div>
+      <button class="dl-btn" onclick="downloadExcel('income')">⬇ Excel</button>
     </div>
     <table>
       <thead>
         <tr>
           <th>Date</th>
-          <th>Shop</th>
+          <th>Cash</th>
           <th>UPI</th>
           <th>Total</th>
         </tr>
@@ -136,11 +351,15 @@
     </table>
   </div>
 
-  <!-- Expense -->
+  <!-- 2. Expense Table -->
+  <p class="section-label">Expenses</p>
   <div class="card">
-    <div class="card-header">
-      <span>Expenses</span>
-      <span onclick="downloadCSV('expense')" style="cursor:pointer;">Download</span>
+    <div class="card-head">
+      <div class="card-head-left">
+        <span class="card-tag">Expenses</span>
+        <span class="total-chip red" id="expenseTotalChip">₹0</span>
+      </div>
+      <button class="dl-btn" onclick="downloadExcel('expense')">⬇ Excel</button>
     </div>
     <table>
       <thead>
@@ -155,18 +374,45 @@
     </table>
   </div>
 
-  <!-- Summary -->
+  <!-- 3. App vs Shop Difference Table -->
+  <p class="section-label">App vs Shop Comparison</p>
   <div class="card">
-    <div class="card-header">
-      <span>Date-wise Summary</span>
-      <span onclick="downloadCSV('summary')" style="cursor:pointer;">Download</span>
+    <div class="card-head">
+      <div class="card-head-left">
+        <span class="card-tag">MyBillBook vs Shop</span>
+        <span class="total-chip blue" id="appDiffChip">0 days</span>
+      </div>
+      <button class="dl-btn" onclick="downloadExcel('appVsShop')">⬇ Excel</button>
     </div>
     <table>
       <thead>
         <tr>
           <th>Date</th>
-          <th>Shop</th>
-          <th>App</th>
+          <th>Shop Income</th>
+          <th>App Income</th>
+          <th>Difference</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="appVsShopBody"></tbody>
+    </table>
+  </div>
+
+  <!-- 4. Date-wise Summary (no App Income) -->
+  <p class="section-label">Date-wise Summary</p>
+  <div class="card">
+    <div class="card-head">
+      <div class="card-head-left">
+        <span class="card-tag">Summary</span>
+        <span class="total-chip amber" id="summaryNetChip">Net ₹0</span>
+      </div>
+      <button class="dl-btn" onclick="downloadExcel('summary')">⬇ Excel</button>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Income</th>
           <th>Expense</th>
           <th>Net</th>
         </tr>
@@ -178,91 +424,237 @@
 </div>
 
 <script>
-let records = [];
+  let allRecords = [];
 
-function fmt(n) {
-  return Number(n || 0).toLocaleString('en-IN');
-}
+  const fmt = n => Number(n || 0).toLocaleString('en-IN');
 
-async function load() {
-  const res = await fetch("https://shop-tracker-y8k2.onrender.com/records");
-  records = await res.json();
-  render();
-}
-
-function render() {
-  const iBody = document.getElementById("incomeBody");
-  const eBody = document.getElementById("expenseBody");
-  const sBody = document.getElementById("summaryBody");
-
-  iBody.innerHTML = "";
-  eBody.innerHTML = "";
-  sBody.innerHTML = "";
-
-  records.forEach(r => {
-    const shop = (r.close||0)-(r.open||0);
-    const upi = r.upi||0;
-    const income = shop + upi;
-
-    const exp = (r.exp||0)+(r.upiExp||0);
-    const app = r.appIncome||0;
-
-    if (income > 0) {
-      iBody.innerHTML += `
-        <tr>
-          <td>${r.date}</td>
-          <td class="green">₹${fmt(shop)}</td>
-          <td class="green">₹${fmt(upi)}</td>
-          <td class="green">₹${fmt(income)}</td>
-        </tr>`;
+  async function load() {
+    try {
+      const res = await fetch("https://shop-tracker-y8k2.onrender.com/records");
+      allRecords = await res.json();
+    } catch(e) {
+      allRecords = [];
     }
+    document.getElementById('loader').style.display = 'none';
 
-    if (exp > 0) {
-      eBody.innerHTML += `
-        <tr>
-          <td>${r.date}</td>
-          <td class="red">₹${fmt(r.exp)}</td>
-          <td class="red">₹${fmt(r.upiExp)}</td>
-          <td class="red">₹${fmt(exp)}</td>
-        </tr>`;
-    }
+    // Today label
+    document.getElementById('todayLabel').textContent =
+      new Date().toLocaleDateString('en-IN', { day:'numeric', month:'long', year:'numeric' });
 
-    const net = income + app - exp;
+    // Default month filter to current month
+    const now = new Date();
+    document.getElementById('monthFilter').value =
+      `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
 
-    sBody.innerHTML += `
-      <tr>
-        <td>${r.date}</td>
-        <td>₹${fmt(income)}</td>
-        <td>₹${fmt(app)}</td>
-        <td>₹${fmt(exp)}</td>
-        <td class="${net>=0?'green':'red'}">₹${fmt(net)}</td>
-      </tr>`;
-  });
-}
-
-function downloadCSV(type) {
-  let rows = [];
-
-  if (type === 'summary') {
-    rows.push(["Date","Shop","App","Expense","Net"]);
-    records.forEach(r => {
-      const shop=(r.close||0)-(r.open||0)+(r.upi||0);
-      const exp=(r.exp||0)+(r.upiExp||0);
-      const app=r.appIncome||0;
-      rows.push([r.date, shop, app, exp, shop+app-exp]);
-    });
+    render();
   }
 
-  let csv = rows.map(r=>r.join(",")).join("\n");
-  const blob = new Blob([csv]);
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = type + ".csv";
-  a.click();
-}
+  function filteredRecords() {
+    const month = document.getElementById('monthFilter').value;
+    const order = document.getElementById('sortOrder').value;
+    let recs = allRecords.filter(r => !month || r.date?.startsWith(month));
+    recs = [...recs].sort((a, b) => {
+      return order === 'desc'
+        ? b.date?.localeCompare(a.date)
+        : a.date?.localeCompare(b.date);
+    });
+    return recs;
+  }
 
-load();
+  function render() {
+    const records = filteredRecords();
+
+    const iBody = document.getElementById('incomeBody');
+    const eBody = document.getElementById('expenseBody');
+    const avBody = document.getElementById('appVsShopBody');
+    const sBody = document.getElementById('summaryBody');
+
+    iBody.innerHTML = '';
+    eBody.innerHTML = '';
+    avBody.innerHTML = '';
+    sBody.innerHTML = '';
+
+    let totalIncome = 0, totalExpense = 0, totalNet = 0, appDays = 0;
+
+    const incomeRows = records.filter(r => {
+      const shop = (r.close||0)-(r.open||0);
+      return shop + (r.upi||0) > 0;
+    });
+
+    if (!incomeRows.length) {
+      iBody.innerHTML = `<tr class="empty-row"><td colspan="4">No income records this period</td></tr>`;
+    }
+
+    records.forEach(r => {
+      const cash = (r.close||0)-(r.open||0);
+      const upi  = r.upi||0;
+      const income = cash + upi;
+      const exp = (r.exp||0)+(r.upiExp||0);
+      const app = r.appIncome||0;
+      const net = income - exp;
+
+      totalIncome += income;
+      totalExpense += exp;
+      totalNet += net;
+
+      // Income
+      if (income > 0) {
+        iBody.innerHTML += `
+          <tr>
+            <td>${r.date}</td>
+            <td class="num-green">₹${fmt(cash)}</td>
+            <td class="num-green">₹${fmt(upi)}</td>
+            <td class="num-green">₹${fmt(income)}</td>
+          </tr>`;
+      }
+
+      // Expense
+      if (exp > 0) {
+        eBody.innerHTML += `
+          <tr>
+            <td>${r.date}</td>
+            <td class="num-red">₹${fmt(r.exp||0)}</td>
+            <td class="num-red">₹${fmt(r.upiExp||0)}</td>
+            <td class="num-red">₹${fmt(exp)}</td>
+          </tr>`;
+      }
+
+      // App vs Shop
+      if (app > 0 || income > 0) {
+        const diff = app - income;
+        const absDiff = Math.abs(diff);
+        let statusLabel, diffClass, badge;
+        if (diff === 0) {
+          statusLabel = 'Matched ✓'; diffClass = 'num-green'; badge = '';
+        } else if (diff > 0) {
+          statusLabel = 'App Higher'; diffClass = 'num-blue';
+          badge = `<span class="badge up">+₹${fmt(absDiff)}</span>`;
+        } else {
+          statusLabel = 'Shop Higher'; diffClass = 'num-red';
+          badge = `<span class="badge dn">-₹${fmt(absDiff)}</span>`;
+        }
+        appDays++;
+        avBody.innerHTML += `
+          <tr>
+            <td>${r.date}</td>
+            <td>₹${fmt(income)}</td>
+            <td class="num-blue">₹${fmt(app)}</td>
+            <td class="${diffClass}">₹${fmt(absDiff)} ${badge}</td>
+            <td>${statusLabel}</td>
+          </tr>`;
+      }
+
+      // Summary (no app)
+      sBody.innerHTML += `
+        <tr>
+          <td>${r.date}</td>
+          <td>₹${fmt(income)}</td>
+          <td class="num-red">₹${fmt(exp)}</td>
+          <td class="${net>=0?'num-green':'num-red'}">₹${fmt(net)}</td>
+        </tr>`;
+    });
+
+    if (!records.length) {
+      ['expenseBody','appVsShopBody','summaryBody'].forEach(id => {
+        document.getElementById(id).innerHTML =
+          `<tr class="empty-row"><td colspan="5">No records this period</td></tr>`;
+      });
+    }
+
+    document.getElementById('incomeTotalChip').textContent   = `₹${fmt(totalIncome)}`;
+    document.getElementById('expenseTotalChip').textContent  = `₹${fmt(totalExpense)}`;
+    document.getElementById('appDiffChip').textContent       = `${appDays} days`;
+    document.getElementById('summaryNetChip').textContent    = `Net ₹${fmt(totalNet)}`;
+  }
+
+  // --- Excel download ---
+  function buildIncomeData(records) {
+    const rows = [['Date','Cash (₹)','UPI (₹)','Total (₹)']];
+    records.forEach(r => {
+      const cash = (r.close||0)-(r.open||0), upi = r.upi||0;
+      if (cash+upi > 0) rows.push([r.date, cash, upi, cash+upi]);
+    });
+    return rows;
+  }
+
+  function buildExpenseData(records) {
+    const rows = [['Date','Cash (₹)','UPI (₹)','Total (₹)']];
+    records.forEach(r => {
+      const exp = (r.exp||0), upi = (r.upiExp||0);
+      if (exp+upi > 0) rows.push([r.date, exp, upi, exp+upi]);
+    });
+    return rows;
+  }
+
+  function buildAppVsShopData(records) {
+    const rows = [['Date','Shop Income (₹)','App Income (₹)','Difference (₹)','Status']];
+    records.forEach(r => {
+      const income = (r.close||0)-(r.open||0)+(r.upi||0);
+      const app = r.appIncome||0;
+      if (income > 0 || app > 0) {
+        const diff = app - income;
+        const status = diff===0?'Matched':diff>0?'App Higher':'Shop Higher';
+        rows.push([r.date, income, app, diff, status]);
+      }
+    });
+    return rows;
+  }
+
+  function buildSummaryData(records) {
+    const rows = [['Date','Income (₹)','Expense (₹)','Net (₹)']];
+    records.forEach(r => {
+      const income = (r.close||0)-(r.open||0)+(r.upi||0);
+      const exp = (r.exp||0)+(r.upiExp||0);
+      rows.push([r.date, income, exp, income-exp]);
+    });
+    return rows;
+  }
+
+  function styledSheet(data, greenCols=[], redCols=[]) {
+    const ws = XLSX.utils.aoa_to_sheet(data);
+    // Column widths
+    ws['!cols'] = data[0].map((_,i) => ({ wch: i===0 ? 14 : 16 }));
+    return ws;
+  }
+
+  function downloadExcel(type) {
+    const records = filteredRecords();
+    const wb = XLSX.utils.book_new();
+    let data, title;
+
+    if (type === 'income') {
+      data = buildIncomeData(records); title = 'Income';
+    } else if (type === 'expense') {
+      data = buildExpenseData(records); title = 'Expenses';
+    } else if (type === 'appVsShop') {
+      data = buildAppVsShopData(records); title = 'App vs Shop';
+    } else {
+      data = buildSummaryData(records); title = 'Summary';
+    }
+
+    const ws = styledSheet(data);
+    XLSX.utils.book_append_sheet(wb, ws, title);
+    XLSX.writeFile(wb, `${title.replace(/ /g,'_')}.xlsx`);
+  }
+
+  function downloadAllExcel() {
+    const records = filteredRecords();
+    const wb = XLSX.utils.book_new();
+
+    [
+      ['Income', buildIncomeData(records)],
+      ['Expenses', buildExpenseData(records)],
+      ['App vs Shop', buildAppVsShopData(records)],
+      ['Summary', buildSummaryData(records)],
+    ].forEach(([name, data]) => {
+      XLSX.utils.book_append_sheet(wb, styledSheet(data), name);
+    });
+
+    const month = document.getElementById('monthFilter').value || 'All';
+    XLSX.writeFile(wb, `TheNewShop_${month}.xlsx`);
+  }
+
+  load();
 </script>
-
 </body>
 </html>
