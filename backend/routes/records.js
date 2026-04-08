@@ -13,15 +13,22 @@ router.get("/", async (req, res) => {
 })
 
 // CREATE record
+// ✅ CORRECT — upsert on date
 router.post("/", async (req, res) => {
+  const { date } = req.body;
 
-    const record = new Record(req.body)
+  let record = await Record.findOne({ date });
 
-    await record.save()
+  if (record) {
+    Object.assign(record, req.body);
+    await record.save();
+  } else {
+    record = new Record(req.body);
+    await record.save();
+  }
 
-    res.json(record)
-
-})
+  res.json(record);
+});
 
 // DELETE record
 router.delete("/:id", async (req, res) => {
