@@ -2,205 +2,267 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>History — The New Shop</title>
 
-  <link
-    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500&display=swap"
-    rel="stylesheet"
-  />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
 
   <style>
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --green-light: #EAF3DE;
-      --green-mid:   #639922;
-      --green-dark:  #3B6D11;
-      --green-deep:  #27500A;
-      --green-border:#c0dd97;
+      --green-light:#EAF3DE; --green-dark:#3B6D11;
+      --red-light:#FCEBEB; --red-dark:#A32D2D;
+      --blue-light:#E7F0FF; --blue-dark:#1E4FCC;
 
-      --red-light:   #FCEBEB;
-      --red-mid:     #E24B4A;
-      --red-dark:    #A32D2D;
-      --red-deep:    #791F1F;
-      --red-border:  #F7C1C1;
-
-      --surface:     #f5f4f0;
-      --card:        #ffffff;
-      --border:      #e8e6e0;
-      --text:        #1a1a18;
-      --text-muted:  #888780;
-      --text-faint:  #b4b2a9;
+      --surface:#f5f4f0; --card:#fff; --border:#e8e6e0;
+      --text:#1a1a18; --text-muted:#888780; --text-faint:#b4b2a9;
     }
 
     body {
-      font-family: 'DM Sans', sans-serif;
-      background: var(--surface);
-      min-height: 100vh;
-      padding: 2rem 1rem 4rem;
-      color: var(--text);
+      font-family:'DM Sans',sans-serif;
+      background:var(--surface);
+      padding:2rem 1rem;
+      color:var(--text);
     }
 
-    .wrap {
-      max-width: 700px;
-      margin: 0 auto;
+    .wrap { max-width:800px; margin:auto; }
+
+    .page-header { margin-bottom:2rem; }
+    .page-header h1 {
+      font-family:'Playfair Display',serif;
+      font-size:28px;
     }
 
-    .back {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 13px;
-      color: var(--text-muted);
-      text-decoration: none;
-      margin-bottom: 1.5rem;
+    /* Buttons */
+    .actions {
+      display:flex;
+      gap:10px;
+      margin-bottom:2rem;
     }
 
-    .page-header {
-      margin-bottom: 2rem;
+    .btn {
+      padding:8px 14px;
+      border-radius:99px;
+      font-size:13px;
+      text-decoration:none;
+      border:1px solid var(--border);
+      background:var(--card);
+      color:var(--text);
     }
 
-    .summary-row {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 2rem;
+    .btn.blue {
+      background:var(--blue-light);
+      color:var(--blue-dark);
+      border-color:#c7d9ff;
     }
 
-    .summary-pill {
-      flex: 1;
-      padding: 1rem;
-      border-radius: 14px;
+    /* Table card */
+    .card {
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:16px;
+      margin-bottom:2rem;
+      overflow:hidden;
     }
 
-    .section {
-      margin-bottom: 2rem;
+    .card-header {
+      display:flex;
+      justify-content:space-between;
+      padding:1rem;
+      font-size:13px;
+      color:var(--text-muted);
     }
 
     table {
-      width: 100%;
-      border-collapse: collapse;
+      width:100%;
+      border-collapse:collapse;
     }
 
-    th, td {
-      padding: 10px;
-      text-align: right;
+    th {
+      background:var(--surface);
+      font-size:11px;
+      text-transform:uppercase;
+      color:var(--text-faint);
+      padding:10px;
+      text-align:right;
     }
 
-    th:first-child,
-    td:first-child {
-      text-align: left;
+    th:first-child, td:first-child { text-align:left; }
+
+    td {
+      padding:12px 10px;
+      border-bottom:1px solid var(--border);
+      text-align:right;
     }
 
-    .toast {
-      position: fixed;
-      bottom: 2rem;
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--text);
-      color: white;
-      padding: 10px 20px;
-      border-radius: 99px;
-      opacity: 0;
-    }
+    tr:last-child td { border-bottom:none; }
 
-    .toast.show {
-      opacity: 1;
-    }
+    .green { color:var(--green-dark); }
+    .red { color:var(--red-dark); }
   </style>
 </head>
 
 <body>
-  <div class="wrap">
+<div class="wrap">
 
-    <a href="index.html" class="back">← The New Shop</a>
-
-    <div class="page-header">
-      <p>The New Shop</p>
-      <h1>History</h1>
-    </div>
-
-    <!-- Summary -->
-    <div class="summary-row">
-      <div class="summary-pill">
-        Income ₹<span id="sumIncome">—</span>
-      </div>
-      <div class="summary-pill">
-        Expense ₹<span id="sumExpense">—</span>
-      </div>
-      <div class="summary-pill">
-        Net ₹<span id="sumNet">—</span>
-      </div>
-    </div>
-
-    <!-- Income -->
-    <div class="section">
-      <h3>Income</h3>
-      <div id="incomeTableWrap"></div>
-    </div>
-
-    <!-- Expenses -->
-    <div class="section">
-      <h3>Expenses</h3>
-      <div id="expenseTableWrap"></div>
-    </div>
-
+  <div class="page-header">
+    <h1>History</h1>
   </div>
 
-  <div class="toast" id="toast">Deleted</div>
+  <!-- Buttons -->
+  <div class="actions">
+    <a href="income.html" class="btn">+ Income</a>
+    <a href="expenses.html" class="btn">+ Expense</a>
+    <a href="appIncome.html" class="btn blue">+ App Income</a>
+  </div>
 
-  <script>
-    let records = [];
+  <!-- Income -->
+  <div class="card">
+    <div class="card-header">
+      <span>Income</span>
+      <span onclick="downloadCSV('income')" style="cursor:pointer;">Download</span>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Shop</th>
+          <th>UPI</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody id="incomeBody"></tbody>
+    </table>
+  </div>
 
-    function fmt(n) {
-      return Number(n).toLocaleString('en-IN');
+  <!-- Expense -->
+  <div class="card">
+    <div class="card-header">
+      <span>Expenses</span>
+      <span onclick="downloadCSV('expense')" style="cursor:pointer;">Download</span>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Cash</th>
+          <th>UPI</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody id="expenseBody"></tbody>
+    </table>
+  </div>
+
+  <!-- Summary -->
+  <div class="card">
+    <div class="card-header">
+      <span>Date-wise Summary</span>
+      <span onclick="downloadCSV('summary')" style="cursor:pointer;">Download</span>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Shop</th>
+          <th>App</th>
+          <th>Expense</th>
+          <th>Net</th>
+        </tr>
+      </thead>
+      <tbody id="summaryBody"></tbody>
+    </table>
+  </div>
+
+</div>
+
+<script>
+let records = [];
+
+function fmt(n) {
+  return Number(n || 0).toLocaleString('en-IN');
+}
+
+async function load() {
+  const res = await fetch("http://localhost:5000/records");
+  records = await res.json();
+  render();
+}
+
+function render() {
+  const iBody = document.getElementById("incomeBody");
+  const eBody = document.getElementById("expenseBody");
+  const sBody = document.getElementById("summaryBody");
+
+  iBody.innerHTML = "";
+  eBody.innerHTML = "";
+  sBody.innerHTML = "";
+
+  records.forEach(r => {
+    const shop = (r.close||0)-(r.open||0);
+    const upi = r.upi||0;
+    const income = shop + upi;
+
+    const exp = (r.exp||0)+(r.upiExp||0);
+    const app = r.appIncome||0;
+
+    if (income > 0) {
+      iBody.innerHTML += `
+        <tr>
+          <td>${r.date}</td>
+          <td class="green">₹${fmt(shop)}</td>
+          <td class="green">₹${fmt(upi)}</td>
+          <td class="green">₹${fmt(income)}</td>
+        </tr>`;
     }
 
-    function fmtDate(d) {
-      if (!d) return '-';
-      return d;
+    if (exp > 0) {
+      eBody.innerHTML += `
+        <tr>
+          <td>${r.date}</td>
+          <td class="red">₹${fmt(r.exp)}</td>
+          <td class="red">₹${fmt(r.upiExp)}</td>
+          <td class="red">₹${fmt(exp)}</td>
+        </tr>`;
     }
 
-    async function loadRecords() {
-      try {
-        const res = await fetch("https://shop-tracker-y8k2.onrender.com/records");
-        records = await res.json();
-      } catch {
-        records = [];
-      }
-      render();
-    }
+    const net = income + app - exp;
 
-    function render() {
-      const income = records.filter(r => r.open || r.upi);
-      const expense = records.filter(r => r.exp || r.upiExp);
+    sBody.innerHTML += `
+      <tr>
+        <td>${r.date}</td>
+        <td>₹${fmt(income)}</td>
+        <td>₹${fmt(app)}</td>
+        <td>₹${fmt(exp)}</td>
+        <td class="${net>=0?'green':'red'}">₹${fmt(net)}</td>
+      </tr>`;
+  });
+}
 
-      const totalIncome = income.reduce((s, r) => s + (r.totalProfit || 0), 0);
-      const totalExpense = expense.reduce((s, r) => s + Math.abs(r.totalProfit || 0), 0);
+function downloadCSV(type) {
+  let rows = [];
 
-      document.getElementById("sumIncome").textContent = fmt(totalIncome);
-      document.getElementById("sumExpense").textContent = fmt(totalExpense);
-      document.getElementById("sumNet").textContent = fmt(totalIncome - totalExpense);
+  if (type === 'summary') {
+    rows.push(["Date","Shop","App","Expense","Net"]);
+    records.forEach(r => {
+      const shop=(r.close||0)-(r.open||0)+(r.upi||0);
+      const exp=(r.exp||0)+(r.upiExp||0);
+      const app=r.appIncome||0;
+      rows.push([r.date, shop, app, exp, shop+app-exp]);
+    });
+  }
 
-      renderIncomeTable(income);
-      renderExpenseTable(expense);
-    }
+  let csv = rows.map(r=>r.join(",")).join("\n");
+  const blob = new Blob([csv]);
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = type + ".csv";
+  a.click();
+}
 
-    function renderIncomeTable(rows) {
-      document.getElementById("incomeTableWrap").innerHTML =
-        rows.map(r => `<div>${fmtDate(r.date)} - ₹${fmt(r.totalProfit)}</div>`).join("");
-    }
+load();
+</script>
 
-    function renderExpenseTable(rows) {
-      document.getElementById("expenseTableWrap").innerHTML =
-        rows.map(r => `<div>${fmtDate(r.date)} - ₹${fmt(r.exp + r.upiExp)}</div>`).join("");
-    }
-
-    loadRecords();
-  </script>
 </body>
 </html>
