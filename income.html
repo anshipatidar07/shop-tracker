@@ -487,30 +487,41 @@ document.getElementById("dateInput").valueAsDate=new Date()
   });
 
   async function saveIncome() {
-    const open  = parseNumber(document.getElementById("openingCash").value);
-    const close = parseNumber(document.getElementById("closingCash").value);
-    const upi   = parseNumber(document.getElementById("upiIncome").value);
+  const open  = parseNumber(document.getElementById("openingCash").value);
+  const close = parseNumber(document.getElementById("closingCash").value);
+  const upi   = parseNumber(document.getElementById("upiIncome").value);
 
-    const entry = {
-      date: document.getElementById("dateInput").value,
-      open, close, exp: 0, upi, upiExp: 0,
-      totalProfit: (close - open) + upi
-    };
+  const entry = {
+    date: document.getElementById("dateInput").value,
+    open, close, exp: 0, upi, upiExp: 0,
+    totalProfit: (close - open) + upi
+  };
 
-    try {
-      await fetch("http://localhost:5000/records", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(entry)
-      });
-    } catch (e) {
-      console.warn("Could not reach server:", e);
+  try {
+    const res = await fetch("https://shop-tracker-y8k2.onrender.com/records", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(entry)
+    });
+
+    if (!res.ok) {
+      throw new Error("Failed to save");
     }
 
     const toast = document.getElementById("toast");
+    toast.innerText = "Income saved!";
+    toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 2500);
+
+  } catch (e) {
+    console.error(e);
+
+    const toast = document.getElementById("toast");
+    toast.innerText = "❌ Failed to save";
     toast.classList.add("show");
     setTimeout(() => toast.classList.remove("show"), 2500);
   }
+}
 
   document.getElementById("dateInput").valueAsDate = new Date();
 </script>

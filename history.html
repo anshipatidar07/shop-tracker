@@ -487,7 +487,7 @@ loadRecords()
 
   async function loadRecords() {
     try {
-      const res = await fetch("http://localhost:5000/records");
+      const res = await fetch("https://shop-tracker-y8k2.onrender.com/records");
       records = await res.json();
     } catch(e) {
       records = [];
@@ -599,7 +599,7 @@ loadRecords()
   async function deleteEntry(id) {
     if (!confirm("Delete this record?")) return;
     try {
-      await fetch(`http://localhost:5000/records/${id}`, { method: "DELETE" });
+      await fetch(`https://shop-tracker-y8k2.onrender.com/records/${id}`, { method: "DELETE" });
     } catch(e) { console.warn(e); }
     records = records.filter(r => r._id !== id);
     render();

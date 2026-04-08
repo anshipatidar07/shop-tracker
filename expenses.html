@@ -473,7 +473,7 @@ document.getElementById("dateInput").valueAsDate=new Date()
     };
 
     try {
-      await fetch("http://localhost:5000/records", {
+      await fetch("https://shop-tracker-y8k2.onrender.com/records", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(entry)

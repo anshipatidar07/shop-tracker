@@ -231,7 +231,7 @@ calcTotal.innerText=total.toFixed(2)
 
 async function loadRecords(){
 
-const res=await fetch("http://localhost:5000/records")
+const res=await fetch("https://shop-tracker-y8k2.onrender.com/records")
 
 records=await res.json()
 
@@ -260,7 +260,7 @@ upiExp:parseNumber(upiExpenses.value),
 
 entry.totalProfit=(entry.close-entry.open)+entry.exp+entry.upi-entry.upiExp
 
-await fetch("http://localhost:5000/records",{
+await fetch("https://shop-tracker-y8k2.onrender.com/records",{
 
 method:"POST",
 
@@ -323,7 +323,7 @@ async function deleteEntry(id){
 
 if(confirm("Delete record?")){
 
-await fetch(`http://localhost:5000/records/${id}`,{
+await fetch(`https://shop-tracker-y8k2.onrender.com/records/${id}`,{
 method:"DELETE"
 })
 
