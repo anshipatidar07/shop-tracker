@@ -226,6 +226,7 @@
     );
 
     async function saveExpense() {
+      const date  = document.getElementById("dateInput").value; 
       const exp = parseNumber(document.getElementById("expenses").value);
       const upi = parseNumber(document.getElementById("upiExpenses").value);
 
@@ -234,7 +235,7 @@
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ exp, upi })
+        body: JSON.stringify({ date, exp, upiExp: upi })
       });
 
       document.getElementById("toast").classList.add("show");

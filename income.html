@@ -180,7 +180,7 @@
       return value.split(",").reduce((sum, v) => sum + (parseFloat(v) || 0), 0);
     }
 
-    function calculate() {
+    function calculate() {  
       const open = parseNumber(document.getElementById("openingCash").value);
       const close = parseNumber(document.getElementById("closingCash").value);
       const upi = parseNumber(document.getElementById("upiIncome").value);
@@ -198,6 +198,7 @@
     );
 
     async function saveIncome() {
+      const date  = document.getElementById("dateInput").value; 
       const open = parseNumber(document.getElementById("openingCash").value);
       const close = parseNumber(document.getElementById("closingCash").value);
       const upi = parseNumber(document.getElementById("upiIncome").value);
@@ -207,7 +208,7 @@
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ open, close, upi })
+        body: JSON.stringify({ date, open, close, upi }) 
       });
 
       document.getElementById("toast").classList.add("show");

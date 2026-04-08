@@ -436,7 +436,7 @@
       allRecords = [];
     }
     document.getElementById('loader').style.display = 'none';
-
+    console.log('Loaded records:', allRecords);
     // Today label
     document.getElementById('todayLabel').textContent =
       new Date().toLocaleDateString('en-IN', { day:'numeric', month:'long', year:'numeric' });
@@ -450,15 +450,7 @@
   }
 
   function filteredRecords() {
-    const month = document.getElementById('monthFilter').value;
-    const order = document.getElementById('sortOrder').value;
-    let recs = allRecords.filter(r => !month || r.date?.startsWith(month));
-    recs = [...recs].sort((a, b) => {
-      return order === 'desc'
-        ? b.date?.localeCompare(a.date)
-        : a.date?.localeCompare(b.date);
-    });
-    return recs;
+    return allRecords;
   }
 
   function render() {
@@ -484,7 +476,7 @@
     if (!incomeRows.length) {
       iBody.innerHTML = `<tr class="empty-row"><td colspan="4">No income records this period</td></tr>`;
     }
-
+    console.log('Rendering records:', records);
     records.forEach(r => {
       const cash = (r.close||0)-(r.open||0);
       const upi  = r.upi||0;
