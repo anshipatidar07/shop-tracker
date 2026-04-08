@@ -13,23 +13,15 @@ router.get("/", async (req, res) => {
 })
 
 // CREATE record
-router.post("/records", async (req, res) => {
-  const { date } = req.body;
+router.post("/", async (req, res) => {
 
-  let record = await Record.findOne({ date });
+    const record = new Record(req.body)
 
-  if (record) {
-    // ✅ UPDATE EXISTING
-    Object.assign(record, req.body);
-    await record.save();
-  } else {
-    // ✅ CREATE NEW
-    record = new Record(req.body);
-    await record.save();
-  }
+    await record.save()
 
-  res.json(record);
-});
+    res.json(record)
+
+})
 
 // DELETE record
 router.delete("/:id", async (req, res) => {
